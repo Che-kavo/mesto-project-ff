@@ -1,4 +1,4 @@
-export function createCard(cardInfo, deleteCallback ) {
+export function createCard(cardInfo, deleteCallback, handleImageClick) {
   const cardTemplate = document.querySelector('#card-template').content.querySelector('.card');
   const cardElement = cardTemplate.cloneNode(true);
   cardElement.querySelector('.card__title').textContent = cardInfo.name;
@@ -7,6 +7,11 @@ export function createCard(cardInfo, deleteCallback ) {
 
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const likeButton = cardElement.querySelector('.card__like-button');
+  
+  const imageElement = cardElement.querySelector('.card__image');
+  imageElement.addEventListener('click', (event) => {
+    handleImageClick(event, cardInfo);
+  });
 
   deleteButton.addEventListener('click', () => {
     deleteCallback(cardElement);
