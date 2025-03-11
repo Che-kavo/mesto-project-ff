@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "if exist dist rd /s /q dist && webpack",
-    "dev": "webpack serve --open"
+    "dev": "webpack serve --open",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
     "css-minimizer-webpack-plugin": "^7.0.0",
     "cssnano": "^7.0.6",
     "file-loader": "^6.2.0",
+    "gh-pages": "^6.3.0",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss": "^8.5.1",
