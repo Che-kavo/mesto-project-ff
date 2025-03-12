@@ -7,8 +7,8 @@ const presets = [
       chrome: '64',
       safari: '11.1'
     },
-    useBuiltIns: "entry", // использование полифилов
-    corejs: 3 // добавлена версия core-js
+    useBuiltIns: "entry", 
+    corejs: 3 
   }]
 ];
 
