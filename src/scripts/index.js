@@ -15,41 +15,53 @@ const validationConfig = {
 
 enableValidation(validationConfig);
 
-const placesList = document.querySelector('.places__list'); 
-const profileName = document.querySelector('.profile__title'); 
-const profileDescription = document.querySelector('.profile__description'); 
-const editPopup = document.querySelector('.popup_type_edit'); 
-const formProfile = editPopup.querySelector('.popup__form'); 
-const nameInput = formProfile.querySelector('.popup__input_type_name'); 
-const descriptionInput = formProfile.querySelector('.popup__input_type_description'); 
-const newCardForm = document.querySelector('.popup_type_new-card .popup__form'); 
-const newCardPopup = document.querySelector('.popup_type_new-card'); 
-const newCardNameInput = newCardForm.querySelector('.popup__input_type_card-name'); 
-const linkInput = newCardForm.querySelector('.popup__input_type_url'); 
-const avatarPopup = document.querySelector('.popup_type_new-image'); 
-const avatarForm = avatarPopup.querySelector('.popup__form'); 
-const avatarInput = avatarForm.querySelector('.popup__input_type_url'); 
-const profileImage = document.querySelector('.profile__image');
-let currentUserId;
+const placesList = document.querySelector(".places__list");
+const profileName = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
+const editPopup = document.querySelector(".popup_type_edit");
+const formProfile = editPopup.querySelector(".popup__form");
+const nameInput = formProfile.querySelector(".popup__input_type_name");
+const descriptionInput = formProfile.querySelector(".popup__input_type_description");
+const newCardForm = document.querySelector(".popup_type_new-card .popup__form");
+const newCardPopup = document.querySelector(".popup_type_new-card");
+const newCardNameInput = newCardForm.querySelector(".popup__input_type_card-name");
+const linkInput = newCardForm.querySelector(".popup__input_type_url");
+const avatarPopup = document.querySelector(".popup_type_new-image");
+const avatarForm = avatarPopup.querySelector(".popup__form");
+const avatarInput = avatarForm.querySelector(".popup__input_type_url");
+const profileImage = document.querySelector(".profile__image");
+let currentUserId = null;
 
 document.querySelector(".profile__change-image-button").addEventListener("click", () => {
-  clearValidation(avatarForm, validationConfig);
-  avatarInput.value = "";
-  openModal(avatarPopup);
+    clearValidation(avatarForm, validationConfig);
+    avatarInput.value = "";
+    openModal(avatarPopup);
 });
 
 document.querySelector(".profile__edit-button").addEventListener("click", () => {
-clearValidation(formProfile, validationConfig);
-nameInput.value = profileName.textContent;
-descriptionInput.value = profileDescription.textContent;
-openModal(editPopup);
+    clearValidation(formProfile, validationConfig);
+    nameInput.value = profileName.textContent;
+    descriptionInput.value = profileDescription.textContent;
+    openModal(editPopup);
 });
 
-document.querySelector('.profile__add-button').addEventListener('click', () => {
-newCardForm.reset(); 
-clearValidation(newCardForm, validationConfig); 
-openModal(newCardPopup); 
+document.querySelector(".profile__add-button").addEventListener("click", () => {
+    newCardForm.reset();
+    clearValidation(newCardForm, validationConfig);
+    openModal(newCardPopup);
 });
+
+function handleCardImageClick(cardInfo) {
+    const imagePopup = document.querySelector(".popup_type_image");
+    const popupImage = imagePopup.querySelector(".popup__image");
+    const popupCaption = imagePopup.querySelector(".popup__caption");
+    popupImage.src = cardInfo.link;
+    popupImage.alt = cardInfo.name;
+    popupCaption.textContent = cardInfo.name;
+    openModal(imagePopup);
+}
+
+document.querySelectorAll(".popup").forEach((popup) => setupPopupListeners(popup));
 
 Promise.all([fetchUserData(), fetchInitialCards()])
     .then(([userData, cards]) => {
@@ -65,25 +77,13 @@ Promise.all([fetchUserData(), fetchInitialCards()])
     .catch((err) => console.error(err));
 
 function addCard(cardInfo) {
-  const cardElement = createCard(cardInfo, currentUserId, deleteCard, handleCardImageClick, handleLikeClick);
+    const cardElement = createCard(cardInfo, currentUserId, handleCardImageClick);
     if (cardElement) {
         placesList.append(cardElement);
     } else {
         console.error("Не удалось создать карточку из:", cardInfo);
     }
 }
-
-function handleCardImageClick(cardInfo) {
-    const imagePopup = document.querySelector(".popup_type_image");
-    const popupImage = imagePopup.querySelector(".popup__image");
-    const popupCaption = imagePopup.querySelector(".popup__caption");
-    popupImage.src = cardInfo.link;
-    popupImage.alt = cardInfo.name;
-    popupCaption.textContent = cardInfo.name;
-    openModal(imagePopup);
-}
-
-document.querySelectorAll(".popup").forEach((popup) => setupPopupListeners(popup));
 
 formProfile.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -109,29 +109,29 @@ formProfile.addEventListener("submit", (event) => {
         });
 });
 
-newCardForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const submitButton = newCardForm.querySelector(validationConfig.submitButtonSelector); 
-  setLoadingState(submitButton, true); 
+newCardForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const submitButton = newCardForm.querySelector(validationConfig.submitButtonSelector);
+    setLoadingState(submitButton, true);
 
-  const cardInfo = {
-    name: newCardNameInput.value,
-    link: linkInput.value
-  };
+    const cardInfo = {
+        name: newCardNameInput.value,
+        link: linkInput.value,
+    };
 
-  addNewCard(cardInfo)
-    .then((createdCard) => {
-      const cardElement = createCard(createdCard, currentUserId, deleteCard, handleCardImageClick, handleLikeClick);
-      if (cardElement) {
-        placesList.prepend(cardElement);
-        closeModal(newCardPopup);
-        newCardForm.reset();
-      }
-    })
-    .catch(err => console.error('Ошибка добавления карточки:', err))
-    .finally(() => {
-      setLoadingState(submitButton, false);
-    });
+    addNewCard(cardInfo)
+        .then((createdCard) => {
+            const cardElement = createCard(createdCard, currentUserId, handleCardImageClick);
+            if (cardElement) {
+                placesList.prepend(cardElement);
+                closeModal(newCardPopup);
+                newCardForm.reset();
+            }
+        })
+        .catch((err) => console.error("Ошибка добавления карточки:", err))
+        .finally(() => {
+            setLoadingState(submitButton, false);
+        });
 });
 
 avatarForm.addEventListener("submit", (event) => {

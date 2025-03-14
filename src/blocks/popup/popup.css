@@ -23,5 +23,5 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.6s ease, visibility 0s 0.6s;
 }
