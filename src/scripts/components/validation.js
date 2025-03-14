@@ -1,7 +1,9 @@
 export function enableValidation(config) {
   const forms = document.querySelectorAll(config.formSelector);
 
-  forms.forEach((form) => {
+  const formArray = Array.from(forms);
+
+  formArray.forEach((form) => {
     setEventListeners(form, config);
   });
 }
@@ -21,20 +23,25 @@ function setEventListeners(form, config) {
 }
 
 function checkInputValidity(input, config) {
-  if (input.validity.patternMismatch) {
-    input.setCustomValidity(input.dataset.errorMessage);
+  if (!input.validity.valid) {
+    const errorElement = input.form.querySelector(`.${input.name}-error`);
+    showInputError(input, errorElement, config.inputErrorClass, config.errorClass);
   } else {
-    input.setCustomValidity('');
+    hideInputError(input, config);
   }
-
-  const errorElement = input.form.querySelector(`.${input.name}-error`);
-  showInputError(input, errorElement, config.inputErrorClass, config.errorClass);
 }
 
 function showInputError(input, errorElement, inputErrorClass, errorClass) {
-  input.classList.toggle(inputErrorClass, !input.validity.valid);
+  input.classList.add(inputErrorClass);
   errorElement.textContent = input.validationMessage;
-  errorElement.classList.toggle(errorClass, !input.validity.valid);
+  errorElement.classList.add(errorClass);
+}
+
+function hideInputError(input, config) {
+  const errorElement = input.form.querySelector(`.${input.name}-error`);
+  input.classList.remove(config.inputErrorClass);
+  errorElement.classList.remove(config.errorClass);
+  errorElement.textContent = '';
 }
 
 function toggleButtonState(inputs, button, inactiveButtonClass) {
@@ -48,10 +55,7 @@ export function clearValidation(form, config) {
   const submitButton = form.querySelector(config.submitButtonSelector);
 
   inputs.forEach((input) => {
-    const errorElement = form.querySelector(`.${input.name}-error`);
-    input.classList.remove(config.inputErrorClass);
-    errorElement.classList.remove(config.errorClass);
-    errorElement.textContent = '';
+    hideInputError(input, config);
   });
 
   toggleButtonState(inputs, submitButton, config.inactiveButtonClass);

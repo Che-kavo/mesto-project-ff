@@ -1,22 +1,14 @@
 export function openModal(modal) {
-  modal.style.visibility = 'visible'; 
-  requestAnimationFrame(() => {
-    modal.classList.add('popup_is-opened');
-  });
- 
+  modal.classList.add('popup_is-opened');
+  modal.classList.add('popup_is-animated');
   document.addEventListener('keydown', closePopupOnEsc);
 }
- 
+
 export function closeModal(modal) {
   modal.classList.remove('popup_is-opened');
-  setTimeout(() => {
-    if (!modal.classList.contains('popup_is-opened')) {
-      modal.style.visibility = 'hidden'; 
-    }
-  }, 300); 
+  modal.classList.remove('popup_is-animated'); 
   document.removeEventListener('keydown', closePopupOnEsc);
 }
- 
 
 export function closePopupOnEsc(event) {
   if (event.key === 'Escape') {
@@ -26,12 +18,23 @@ export function closePopupOnEsc(event) {
     }
   }
 }
- 
+
+function handleOverlayClick(event) {
+  if (event.target.classList.contains('popup_is-opened')) {
+    closeModal(event.currentTarget);
+  }
+}
+
 export function setupPopupListeners(popup) {
-  popup.addEventListener('mousedown', (event) => {
-    if (event.target.classList.contains('popup_is-opened') || event.target.classList.contains('popup__close')) {
-      closeModal(popup);
-    }
-  });
-} 
+  popup.addEventListener('mousedown', handleOverlayClick);
+  const closeButton = popup.querySelector('.popup__close');
+  if (closeButton) {
+    closeButton.addEventListener('click', () => closeModal(popup));
+  }
+  popup.classList.add('popup_is-animated'); 
+}
+
+
+
+
 

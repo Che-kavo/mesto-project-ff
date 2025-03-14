@@ -39,19 +39,29 @@ export function deleteCardFromServer(cardId) {
   }).then(checkResponse);
 }
 
+export function handleLikeClick(cardId, isLiked) {
+  const method = isLiked ? 'DELETE' : 'PUT';
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+    method: method,
+    headers: config.headers
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error(`Ошибка HTTP: ${response.status}`);
+    }
+    return response.json();
+  });
+}
+
 export function updateAvatar(avatarUrl) {
   console.log('Отправляем URL аватара:', avatarUrl);
   return fetch(`${config.baseUrl}/users/me/avatar`, {
-      method: 'PATCH',
-      headers: config.headers,
-      body: JSON.stringify({ avatar: avatarUrl })
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({ avatar: avatarUrl })
   })
-  .then((response) => {
-      console.log('Ответ сервера:', response);
-      return checkResponse(response);
-  })
-  .catch((error) => {
-      console.error('Ошибка при обновлении аватара:', error);
+  .then(response => {
+    console.log('Ответ сервера:', response);
+    return checkResponse(response);
   });
 }
 
