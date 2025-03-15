@@ -24,14 +24,12 @@ function handleOverlayClick(event) {
 }
 
 export function setupPopupListeners(popup) {
-  if (!popup.classList.contains("popup_is-animated")) {
-    popup.classList.add("popup_is-animated");
-  }
-
   popup.addEventListener("mousedown", handleOverlayClick);
 
   const closeButton = popup.querySelector(".popup__close");
   if (closeButton) {
     closeButton.addEventListener("click", () => closeModal(popup));
   }
+
+  popup.classList.add(".popup_is-animated");
 }
