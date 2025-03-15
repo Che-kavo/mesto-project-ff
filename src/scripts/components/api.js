@@ -44,12 +44,7 @@ export function handleLikeClick(cardId, isLiked) {
   return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: method,
     headers: config.headers
-  }).then(response => {
-    if (!response.ok) {
-      throw new Error(`Ошибка HTTP: ${response.status}`);
-    }
-    return response.json();
-  });
+  }).then(checkResponse);
 }
 
 export function updateAvatar(avatarUrl) {
@@ -59,15 +54,12 @@ export function updateAvatar(avatarUrl) {
     headers: config.headers,
     body: JSON.stringify({ avatar: avatarUrl })
   })
-  .then(response => {
-    console.log('Ответ сервера:', response);
-    return checkResponse(response);
-  });
+  .then(checkResponse);
 }
 
 export function checkResponse(response) {
   if (!response.ok) {
-      return Promise.reject(`Ошибка: ${response.status}`);
+    return Promise.reject(`Ошибка: ${response.status}`);
   }
   return response.json();
 }

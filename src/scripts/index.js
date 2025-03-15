@@ -1,6 +1,6 @@
-import { fetchUserData, fetchInitialCards, updateUserData, addNewCard, updateAvatar, handleLikeClick } from "./components/api.js";
+import { fetchUserData, fetchInitialCards, updateUserData, addNewCard, updateAvatar } from "./components/api.js";
 import { openModal, closeModal, setupPopupListeners } from "./components/modal.js";
-import { createCard, deleteCard } from "./components/card.js";
+import { createCard, deleteCard, likeCard } from "./components/card.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
 import "../pages/index.css";
 
@@ -51,7 +51,7 @@ document.querySelector(".profile__add-button").addEventListener("click", () => {
     openModal(newCardPopup);
 });
 
-function handleCardImageClick(cardInfo) {
+function handleImageClick(cardInfo) {
     const imagePopup = document.querySelector(".popup_type_image");
     const popupImage = imagePopup.querySelector(".popup__image");
     const popupCaption = imagePopup.querySelector(".popup__caption");
@@ -77,7 +77,7 @@ Promise.all([fetchUserData(), fetchInitialCards()])
     .catch((err) => console.error(err));
 
 function addCard(cardInfo) {
-    const cardElement = createCard(cardInfo, currentUserId, handleCardImageClick);
+    const cardElement = createCard(cardInfo, currentUserId, handleImageClick, deleteCard, likeCard);
     if (cardElement) {
         placesList.append(cardElement);
     } else {
@@ -119,9 +119,9 @@ newCardForm.addEventListener("submit", (event) => {
         link: linkInput.value,
     };
 
-    addNewCard(cardInfo)
-        .then((createdCard) => {
-            const cardElement = createCard(createdCard, currentUserId, handleCardImageClick);
+addNewCard(cardInfo)
+        .then((cardInfo) => {
+            const cardElement = createCard(cardInfo, currentUserId, handleImageClick, deleteCard, likeCard);
             if (cardElement) {
                 placesList.prepend(cardElement);
                 closeModal(newCardPopup);

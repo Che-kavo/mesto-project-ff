@@ -22,10 +22,16 @@ function setEventListeners(form, config) {
 }
 
 function checkInputValidity(input, config) {
-  if (!input.validity.valid) {
-      showInputError(input, config);
+  if (input.validity.patternMismatch) {
+    input.setCustomValidity(input.dataset.errorMessage);
   } else {
-      hideInputError(input, config);
+    input.setCustomValidity('');
+  }
+
+  if (!input.validity.valid) {
+    showInputError(input, config);
+  } else {
+    hideInputError(input, config);
   }
 }
 
