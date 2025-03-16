@@ -1,6 +1,6 @@
 import { deleteCardFromServer, handleLikeClick } from "./api.js";
 
-export function createCard(cardInfo, currentUserId, handleImageClick, deleteCard, likeCard) {
+export function createCard(cardInfo, currentUserId, handleImageClick) {
   const cardTemplate = document.querySelector('#card-template').content.querySelector('.card');
   const cardElement = cardTemplate.cloneNode(true);
   const cardImage = cardElement.querySelector('.card__image');
@@ -13,56 +13,55 @@ export function createCard(cardInfo, currentUserId, handleImageClick, deleteCard
   cardImage.src = cardInfo.link;
   cardImage.alt = cardInfo.name;
 
-  deleteCard(cardInfo, currentUserId, deleteButton, cardElement);
+  setupDeleteButton(cardInfo, currentUserId, deleteButton, cardElement);
+  setupLikeButton(cardInfo, currentUserId, likeButton, likeCounter);
 
   cardImage.addEventListener('click', () => {
     handleImageClick(cardInfo);
   });
 
-  likeCard(cardInfo, currentUserId, likeButton, likeCounter);
-
   return cardElement;
 }
 
-export function deleteCard(cardInfo, currentUserId, deleteButton, cardElement) {
-  if (!cardInfo || !deleteButton || !cardElement) return;
-
+function setupDeleteButton(cardInfo, currentUserId, deleteButton, cardElement) {
   if (cardInfo.owner && cardInfo.owner._id !== currentUserId) {
     deleteButton.remove();
   } else {
-    deleteButton.addEventListener('click', () => {
-      if (cardInfo._id) {
-        deleteCardFromServer(cardInfo._id)
-          .then(() => cardElement.remove())
-          .catch(err => console.error('Ошибка удаления карточки', err));
-      } else {
-        console.error('Ошибка cardInfo._id не определён');
-      }
-    });
+    deleteButton.addEventListener('click', () => deleteCard(cardInfo, cardElement));
   }
 }
 
-export function likeCard(cardInfo, currentUserId, likeButton, likeCounter) {
-  let isLiked = cardInfo.likes.some(like => like._id === currentUserId);
-  let likeCount = cardInfo.likes.length;
-  likeCounter.textContent = likeCount;
-
-  function updateLikeButtonState() {
-    likeButton.classList.toggle('card__like-button_is-active', isLiked);
+export function deleteCard(cardInfo, cardElement) {
+  if (cardInfo._id) {
+    deleteCardFromServer(cardInfo._id)
+      .then(() => cardElement.remove())
+      .catch(err => console.error('Ошибка удаления карточки', err));
+  } else {
+    console.error('Ошибка cardInfo._id не определён');
   }
+}
 
-  updateLikeButtonState();
+function setupLikeButton(cardInfo, currentUserId, likeButton, likeCounter) {
+  updateLikeButtonState(cardInfo, currentUserId, likeButton, likeCounter);
 
-  likeButton.addEventListener('click', () => {
-    handleLikeClick(cardInfo._id, isLiked)
-      .then(updatedCardInfo => {
-        isLiked = !isLiked;
-        likeCount = updatedCardInfo.likes.length;
-        likeCounter.textContent = likeCount || 0;
-        updateLikeButtonState();
-      })
-      .catch(err => {
-        console.error('Ошибка обновления лайков', err);
-      });
-  });
+  likeButton.addEventListener('click', () => likeCard(cardInfo, currentUserId, likeButton, likeCounter));
+}
+
+function updateLikeButtonState(cardInfo, currentUserId, likeButton, likeCounter) {
+  const isLiked = cardInfo.likes.some(like => like._id === currentUserId);
+  likeCounter.textContent = cardInfo.likes.length;
+  likeButton.classList.toggle('card__like-button_is-active', isLiked);
+}
+
+export function likeCard(cardInfo, currentUserId, likeButton, likeCounter) {
+  const isLiked = cardInfo.likes.some(like => like._id === currentUserId);
+
+  handleLikeClick(cardInfo._id, isLiked)
+    .then(updatedCardInfo => {
+      cardInfo.likes = updatedCardInfo.likes; 
+      updateLikeButtonState(updatedCardInfo, currentUserId, likeButton, likeCounter); 
+    })
+    .catch(err => {
+      console.error('Ошибка обновления лайков', err);
+    });
 }
