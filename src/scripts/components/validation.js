@@ -3,7 +3,7 @@ export function enableValidation(config) {
   const formArray = Array.from(forms);
 
   formArray.forEach((form) => {
-      setEventListeners(form, config);
+    setEventListeners(form, config);
   });
 }
 
@@ -11,13 +11,11 @@ function setEventListeners(form, config) {
   const inputs = Array.from(form.querySelectorAll(config.inputSelector));
   const submitButton = form.querySelector(config.submitButtonSelector);
 
-  toggleButtonState(inputs, submitButton, config.inactiveButtonClass);
-
   inputs.forEach((input) => {
-      input.addEventListener("input", () => {
-          checkInputValidity(input, config);
-          toggleButtonState(inputs, submitButton, config.inactiveButtonClass);
-      });
+    input.addEventListener("input", () => {
+      checkInputValidity(input, config);
+      toggleButtonState(inputs, submitButton, config.inactiveButtonClass);
+    });
   });
 }
 
@@ -60,7 +58,7 @@ export function clearValidation(form, config) {
   const submitButton = form.querySelector(config.submitButtonSelector);
 
   inputs.forEach((input) => {
-      hideInputError(input, config);
+    hideInputError(input, config);
   });
 
   toggleButtonState(inputs, submitButton, config.inactiveButtonClass);
