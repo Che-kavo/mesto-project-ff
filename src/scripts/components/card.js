@@ -31,7 +31,7 @@ function setupDeleteButton(cardInfo, currentUserId, deleteButton, cardElement) {
   }
 }
 
-export function deleteCard(cardInfo, cardElement) {
+function deleteCard(cardInfo, cardElement) {
   if (cardInfo._id) {
     deleteCardFromServer(cardInfo._id)
       .then(() => cardElement.remove())
@@ -53,7 +53,7 @@ function updateLikeButtonState(cardInfo, currentUserId, likeButton, likeCounter)
   likeButton.classList.toggle('card__like-button_is-active', isLiked);
 }
 
-export function likeCard(cardInfo, currentUserId, likeButton, likeCounter) {
+function likeCard(cardInfo, currentUserId, likeButton, likeCounter) {
   const isLiked = cardInfo.likes.some(like => like._id === currentUserId);
 
   handleLikeClick(cardInfo._id, isLiked)
