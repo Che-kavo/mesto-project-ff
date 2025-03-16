@@ -1,6 +1,6 @@
 import { fetchUserData, fetchInitialCards, updateUserData, addNewCard, updateAvatar } from "./components/api.js";
 import { openModal, closeModal, setupPopupListeners } from "./components/modal.js";
-import { createCard, deleteCard, likeCard } from "./components/card.js";
+import { createCard } from "./components/card.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
 import "../pages/index.css";
 
@@ -76,7 +76,7 @@ Promise.all([fetchUserData(), fetchInitialCards()])
     .catch((err) => console.error(err));
 
 function addCard(cardInfo) {
-    const cardElement = createCard(cardInfo, currentUserId, handleImageClick, deleteCard, likeCard);
+    const cardElement = createCard(cardInfo, currentUserId, handleImageClick);
     if (cardElement) {
         placesList.append(cardElement);
     } else {
@@ -120,7 +120,7 @@ newCardForm.addEventListener("submit", (event) => {
 
 addNewCard(cardInfo)
         .then((cardInfo) => {
-            const cardElement = createCard(cardInfo, currentUserId, handleImageClick, deleteCard, likeCard);
+            const cardElement = createCard(cardInfo, currentUserId, handleImageClick);
             if (cardElement) {
                 placesList.prepend(cardElement);
                 closeModal(newCardPopup);
