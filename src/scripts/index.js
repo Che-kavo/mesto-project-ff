@@ -73,7 +73,6 @@ Promise.all([fetchUserData(), fetchInitialCards()])
             addCard(cardInfo);
         });
     })
-
     .catch((err) => console.error(err));
 
 function addCard(cardInfo) {
